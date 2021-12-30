@@ -18,7 +18,7 @@ func hook1(attr []interface{}) {
 	if len(attr) != 3 {
 		return
 	}
-	t := attr[0].(*TimeTask)
+	t := attr[0].(*event.TimeTask)
 	left := attr[1].(string)
 	right := attr[2].(string)
 	if left == right {
@@ -31,7 +31,7 @@ func hook2(attr []interface{}) {
 	if len(attr) != 3 {
 		return
 	}
-	t := attr[0].(*TimeTask)
+	t := attr[0].(*event.TimeTask)
 	left := attr[1].(string)
 	right := attr[2].(string)
 	if left == right {
@@ -44,7 +44,7 @@ func hook3(attr []interface{}) {
 	if len(attr) != 3 {
 		return
 	}
-	t := attr[0].(*TimeTask)
+	t := attr[0].(*event.TimeTask)
 	left := attr[1].(string)
 	right := attr[2].(string)
 	if left == right {
@@ -64,12 +64,12 @@ func count2() (interface{}, error) {
 }
 
 // initialize option and create instance
-options := Regist(WithOptionInterval(2 * time.Second),
-		WithOptionValue("1"),
-		WithOptionLoop(true),
-		WithOptionHook(hook1),
-		WithOptionHook(hook2))
-	n, err := NewTimeTask(options)
+options := event.Regist(event.WithOptionInterval(2 * time.Second),
+        event.WithOptionValue("1"),
+        event.WithOptionLoop(true),
+        event.WithOptionHook(hook1),
+        event.WithOptionHook(hook2))
+	n, err := event.NewTimeTask(options)
 	if err != nil {
 		return
 	}
@@ -78,10 +78,10 @@ n.Start()
 time.Sleep(8 * time.Second)
 
 // create another option and update
-options2 := Regist(WithOptionInterval(2 * time.Second),
-		WithOptionValue("1"),
-		WithOptionLoop(false),
-		WithOptionHook(hook3))
+options2 := event.Regist(event.WithOptionInterval(2 * time.Second),
+         event.WithOptionValue("1"),
+         event.WithOptionLoop(false),
+         event.WithOptionHook(hook3))
 n.Update("test", count2, options2)
 time.Sleep(15 * time.Second)
 ```
