@@ -23,6 +23,7 @@ type TimeTask struct {
 	success  int64            // count of success
 	fail     int64            // count of fail
 	op       eventOption      // option
+	timer    *time.Timer      // timer
 	mu       sync.Mutex       // concurrency safe
 }
 
@@ -166,12 +167,14 @@ func (t *TimeTask) Start() {
 		defer func() {
 			t.running = false
 		}()
+		timer := time.NewTimer(t.op.interval)
+		t.timer = timer
 		for {
 			if t.stop {
 				return
 			}
 			select {
-			case <- time.After(t.op.interval):
+			case <- t.timer.C:
 				res, err1 := t.funcJob.Run()
 				if err1 != nil {
 					t.err <- err1
@@ -244,4 +247,5 @@ func (t *TimeTask) GetSuccess() int64 {
 
 func (t *TimeTask) ModifyTime(interval time.Duration) {
 	t.op.interval = interval
+	t.timer.Reset(interval)
 }
